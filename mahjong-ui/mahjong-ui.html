@@ -1,0 +1,263 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Pinfu Challenge</title>
+        <link rel="stylesheet" type="text/css" href="/mahjong-ui/mahjong.css" />
+        <script src="/mahjong-ui/nanoJS.min.js"></script>
+        <script src="/mahjong-ui/mahjong.js"></script>
+        <script>
+            window.onload = function() {
+                mahjongManager = new MahjongManager();
+                mahjongManager.showHands();
+            }
+        </script>
+    </head>
+    <body>
+        <div id="table">
+            <div id="round"></div>
+            <div id="sub-round" class="display-none">
+                <p class="sub-round"></p>
+            </div>
+            <p id="point-self" class="point"></p>
+            <p id="point-down" class="point"></p>
+            <p id="point-opposite" class="point"></p>
+            <p id="point-up" class="point"></p>
+            <div id="fu-self" class="fu fu-horizontal">
+              <div class="fu-east-self"></div>
+            </div>
+            <div id="ho-self" class="ho-vertical">
+                <div class="hai-row">
+                    <ul>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                        <li class="hai-self hai-vertical-middle"/>
+                    </ul>
+                </div>
+            </div>
+            <div id="hands-self">
+                <div class="hands-row">
+                    <ul id="hands-hai-self">
+                        <li class="hai-hand hai-in-hands" value="0"/>
+                        <li class="hai-hand hai-in-hands" value="1"/>
+                        <li class="hai-hand hai-in-hands" value="2"/>
+                        <li class="hai-hand hai-in-hands" value="3"/>
+                        <li class="hai-hand hai-in-hands" value="4"/>
+                        <li class="hai-hand hai-in-hands" value="5"/>
+                        <li class="hai-hand hai-in-hands" value="6"/>
+                        <li class="hai-hand hai-in-hands" value="7"/>
+                        <li class="hai-hand hai-in-hands" value="8"/>
+                        <li class="hai-hand hai-in-hands" value="9"/>
+                        <li class="hai-hand hai-in-hands" value="10"/>
+                        <li class="hai-hand hai-in-hands" value="11"/>
+                        <li class="hai-hand hai-in-hands" value="12"/>
+                    </ul>
+                </div>
+            </div>
+            <div id="hai-drawn-self">
+                <div class="hands-row">
+                    <ul>
+                        <li class="hai-hand hai-drawn" value="-1"/>
+                    </ul>
+                </div>
+            </div>
+            <button id="ron" class="display-none">ロン</button>
+            <div id="fu-opposite" class="fu fu-horizontal">
+              <div class="fu-west-opposite"></div>
+            </div>
+            <div id="ho-opposite" class="ho-vertical">
+                <div class="hai-row">
+                    <ul>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-middle"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                        <li class="hai-opposite hai-vertical-bottom"/>
+                    </ul>
+                </div>
+            </div>
+            <div id="fu-up" class="fu fu-vertical">
+              <div class="fu-north-up"></div>
+            </div>
+            <div id="ho-up" class="ho-horizontal">
+                <div class="hai-row">
+                    <ul>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-place"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-place"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-place"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-middle"/>
+                        <li class="hai-up hai-horizontal-bottom"/>
+                        <li class="hai-up hai-horizontal-bottom"/>
+                        <li class="hai-up hai-horizontal-bottom"/>
+                        <li class="hai-up hai-horizontal-bottom"/>
+                    </ul>
+                </div>
+            </div>
+            <div id="fu-down" class="fu fu-vertical">
+              <div class="fu-south-down"></div>
+            </div>
+            <div id="ho-down" class="ho-horizontal">
+                <div class="hai-row">
+                    <ul>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-middle"/>
+                        <li class="hai-down hai-horizontal-bottom"/>
+                        <li class="hai-down hai-horizontal-bottom"/>
+                        <li class="hai-down hai-horizontal-bottom"/>
+                        <li class="hai-down hai-horizontal-bottom"/>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <section id="modal-ron" class="modal-area">
+            <div class="modal-wrapper">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="ron-header" colspan="3">和了</th>
+                        </tr>
+                        <tr>
+                            <th>起家</th>
+                            <td class="player-point"></td>
+                            <td class="player-point-diff"></td>
+                        </tr>
+                        <tr>
+                            <th>下家</th>
+                            <td class="player-point"></td>
+                            <td class="player-point-diff"></td>
+                        </tr>
+                        <tr>
+                            <th>対面</th>
+                            <td class="player-point"></td>
+                            <td class="player-point-diff"></td>
+                        </tr>
+                        <tr>
+                            <th>上家</th>
+                            <td class="player-point"></td>
+                            <td class="player-point-diff"></td>
+                        </tr>
+                    </tr>
+                </table>
+                <div id="close-modal-ron" class="close-modal">
+                    ×
+                </div>
+            </div>
+        </section>
+        <section id="modal-result" class="modal-area">
+            <div class="modal-wrapper">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="result-header" colspan="4">結果</th>
+                        </tr>
+                        <tr>
+                            <th>起家</th>
+                            <td class="result-order"></td>
+                            <td>着</td>
+                            <td class="result-point"></td>
+                        </tr>
+                        <tr>
+                            <th>下家</th>
+                            <td class="result-order"></td>
+                            <td>着</td>
+                            <td class="result-point"></td>
+                        </tr>
+                        <tr>
+                            <th>対面</th>
+                            <td class="result-order"></td>
+                            <td>着</td>
+                            <td class="result-point"></td>
+                        </tr>
+                        <tr>
+                            <th>上家</th>
+                            <td class="result-order"></td>
+                            <td>着</td>
+                            <td class="result-point"></td>
+                        </tr>
+                    </tr>
+                </table>
+                <div id="close-modal-result" class="close-modal">
+                    ×
+                </div>
+            </div>
+        </section>
+        <button id="debug-ron">ロン</button>
+        <button id="debug-start">スタート</button>
+        <button id="debug-next">次局</button>
+        <button id="debug-result">結果</button>
+    </body>
+</html>
+    

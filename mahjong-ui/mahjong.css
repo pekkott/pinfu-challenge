@@ -1,0 +1,442 @@
+:root {
+    --url-hai: url("");
+}
+
+#table {
+    position: absolute;
+    background-color: DarkSeaGreen;
+    border: 1px solid LightBlue;
+    width: 698px;
+    height: 764px;
+    top: 0px;
+    left: 0px;
+}
+
+#round {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20pt;
+}
+
+#sub-round {
+    position: absolute;
+    top: 350px;
+    left: 319px;
+    width: 62px;
+    height: 5px;
+    background: url('/mahjong-ui/images/b_8_2.gif');
+    background-size: 62px 5px;
+}
+
+.sub-round {
+    margin-left: 28px;
+    margin-top: 5px;
+}
+
+#ho-opposite {
+    position: absolute;
+    top: 40px;
+    left: 250px;
+}
+
+#ho-up {
+    position: absolute;
+    top: 255px;
+    left: 40px;
+}
+
+#ho-down {
+    position: absolute;
+    top: 255px;
+    left: 482px;
+}
+
+#ho-self {
+    position: absolute;
+    top: 493px;
+    left: 250px;
+}
+
+#fu-opposite {
+    position: absolute;
+    top: 251px;
+    left: 319px;
+}
+
+#fu-up {
+    position: absolute;
+    top: 327px;
+    left: 236px;
+}
+
+#fu-down {
+    position: absolute;
+    top: 327px;
+    left: 429px;
+}
+
+#fu-self {
+    position: absolute;
+    top: 436px;
+    left: 319px;
+}
+
+#point-opposite {
+    position: absolute;
+    width: 40px;
+    top: 279px;
+    left: 329px;
+}
+
+#point-up {
+    position: absolute;
+    width: 40px;
+    top: 332px;
+    left: 276px;
+}
+
+#point-down {
+    position: absolute;
+    width: 40px;
+    top: 332px;
+    left: 381px;
+}
+
+#point-self {
+    position: absolute;
+    width: 40px;
+    top: 399px;
+    left: 329px;
+}
+
+#hands-self {
+    position: absolute;
+    width: 429px;
+    height: 44px;
+    top: 704px;
+    left: 131px;
+}
+
+#hai-drawn-self {
+    position: absolute;
+    width: 33px;
+    height: 45px;
+    top: 704px;
+    left: 576px;
+    margin: 0px;
+    padding: 0px;
+}
+
+#ron {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 654px;
+    left: 576px;
+}
+
+.display-none {
+    display: none;
+}
+
+.hands-row > ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.hainds-row > ul > li {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.ho-vertical {
+    width: 198px;
+    height: 150px;
+}
+
+.ho-horizontal {
+    width: 176px;
+    height: 219px;
+}
+
+.hai-row > ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.hai-row > ul > li {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.hai-opposite {
+    background: var(--url-hai);
+}
+
+.hai-up {
+    background: var(--url-hai);
+}
+
+.hai-down {
+    background: var(--url-hai);
+}
+
+.hai-self {
+    background: var(--url-hai);
+}
+
+.hai-hand {
+    background: var(--url-hai);
+}
+
+.hai-vertical-middle {
+    float: left;
+    width: 33px;
+    height: 44px;
+}
+
+.hai-vertical-bottom {
+    float: left;
+    width: 33px;
+    height: 59px;
+}
+
+.hai-vertical-bottom-parts {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    float: left;
+    width: 33px;
+    height: 15px;
+    background: url('/mahjong-ui/images/hai_bottom_parts_vertical.gif');
+}
+
+.hai-vertical-place {
+    float: left;
+    width: 33px;
+    height: 44px;
+}
+
+.hai-horizontal-middle {
+    float: left;
+    width: 44px;
+    height: 34px;
+}
+
+.hai-horizontal-bottom {
+    float: left;
+    width: 44px;
+    height: 49px;
+}
+
+.hai-horizontal-bottom-parts {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    float: left;
+    width: 44px;
+    height: 15px;
+    background: url('/mahjong-ui/images/hai_bottom_parts_horizontal.gif');
+}
+
+.hai-horizontal-place {
+    float: left;
+    width: 44px;
+    height: 34px;
+}
+
+.hai-in-hands {
+    float: left;
+    width: 33px;
+    height: 45px;
+}
+
+.hai-drawn {
+    float: left;
+    width: 33px;
+    height: 45px;
+}
+
+.fu-vertical > div {
+    width: 33px;
+    height: 61px;
+}
+
+.fu-horizontal > div {
+    width: 60px;
+    height: 37px;
+}
+
+.fu-east-opposite {
+    background: url('/mahjong-ui/images/c_e_3.gif');
+}
+
+.fu-south-opposite {
+    background: url('/mahjong-ui/images/c_s_3.gif');
+}
+
+.fu-west-opposite {
+    background: url('/mahjong-ui/images/c_w_3.gif');
+}
+
+.fu-north-opposite {
+    background: url('/mahjong-ui/images/c_n_3.gif');
+}
+
+.fu-east-up {
+    background: url('/mahjong-ui/images/c_e_2.gif');
+}
+
+.fu-south-up {
+    background: url('/mahjong-ui/images/c_s_2.gif');
+}
+
+.fu-west-up {
+    background: url('/mahjong-ui/images/c_w_2.gif');
+}
+
+.fu-north-up {
+    background: url('/mahjong-ui/images/c_n_2.gif');
+}
+
+.fu-east-down {
+    background: url('/mahjong-ui/images/c_e_4.gif');
+}
+
+.fu-south-down {
+    background: url('/mahjong-ui/images/c_s_4.gif');
+}
+
+.fu-west-down {
+    background: url('/mahjong-ui/images/c_w_4.gif');
+}
+
+.fu-north-down {
+    background: url('/mahjong-ui/images/c_n_4.gif');
+}
+
+.fu-east-self {
+    background: url('/mahjong-ui/images/c_e_1.gif');
+}
+
+.fu-south-self {
+    background: url('/mahjong-ui/images/c_s_1.gif');
+}
+
+.fu-west-self {
+    background: url('/mahjong-ui/images/c_w_1.gif');
+}
+
+.fu-north-self {
+    background: url('/mahjong-ui/images/c_n_1.gif');
+}
+
+.point {
+    text-align: right;
+}
+
+.modal-area {
+    visibility: hidden;
+    opacity : 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.modal-wrapper {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform:translate(-50%,-50%);
+    width: 35%;
+    padding: 10px 40px;
+    background-color: Ivory;
+    border: 3px solid DimGray;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.close-modal {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.show-modal {
+    visibility: visible;
+    opacity : 1;
+}
+
+.ron-header {
+    padding-left: 10px;
+    text-align: center;
+}
+
+.player-point {
+    padding-left: 20px;
+    text-align: right;
+}
+
+.player-point-diff {
+    padding-left: 10px;
+    text-align: right;
+}
+
+.result-header {
+    text-align: center;
+}
+
+.result-order {
+    padding-left: 30px;
+    text-align: right;
+}
+
+.result-point {
+    padding-left: 30px;
+    text-align: right;
+}
+
+#debug-ron {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 594px;
+    left: 776px;
+}
+
+#debug-start {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 554px;
+    left: 776px;
+}
+
+#debug-next {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 514px;
+    left: 776px;
+}
+
+#debug-result {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    top: 474px;
+    left: 776px;
+}
