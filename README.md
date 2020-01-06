@@ -16,7 +16,9 @@ curl -H 'Content-Type:application/json' -d '{"man":"22223333444488","pin":"","so
 # 画像
 
 こちらのサイトで配布されている画材(2が付いていない画材)をimages以下に配置すると正常に表示されます。
-https&#58;//mj-king.net/sozai/
+```
+https://mj-king.net/sozai/
+```
 
 # ルール
 
