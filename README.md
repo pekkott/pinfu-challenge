@@ -13,6 +13,11 @@ docker stop mahjong-play-manager
 
 curl -H 'Content-Type:application/json' -d '{"man":"22223333444488","pin":"","sou":"","honors":"","player_wind":27,"round_wind":27,"win_tile_type":"man","win_tile_value":"4"}' http\://localhost:8000
 
+# 画像
+
+こちらのサイトで配布されている画材(2が付いていない画材)をimages以下に配置すると正常に表示されます。
+https\://mj-king.net/sozai/
+
 # ルール
 
 ## ゲーム全般
