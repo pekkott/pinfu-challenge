@@ -1,5 +1,5 @@
 :root {
-    --url-hai: url("");
+    --url-tile: url("");
 }
 
 #table {
@@ -58,25 +58,25 @@
     left: 250px;
 }
 
-#fu-opposite {
+#wind-opposite {
     position: absolute;
     top: 251px;
     left: 319px;
 }
 
-#fu-up {
+#wind-up {
     position: absolute;
     top: 327px;
     left: 236px;
 }
 
-#fu-down {
+#wind-down {
     position: absolute;
     top: 327px;
     left: 429px;
 }
 
-#fu-self {
+#wind-self {
     position: absolute;
     top: 436px;
     left: 319px;
@@ -118,7 +118,7 @@
     left: 131px;
 }
 
-#hai-drawn-self {
+#tile-drawn-self {
     position: absolute;
     width: 33px;
     height: 45px;
@@ -128,12 +128,19 @@
     padding: 0px;
 }
 
-#ron {
+#operation > button {
     position: absolute;
     width: 60px;
     height: 30px;
-    top: 654px;
     left: 576px;
+}
+
+#ron {
+    top: 654px;
+}
+
+#skip {
+    top: 594px;
 }
 
 .display-none {
@@ -146,7 +153,7 @@
     list-style: none;
 }
 
-.hainds-row > ul > li {
+.hands-row > ul > li {
     margin: 0px;
     padding: 0px;
     position: relative;
@@ -164,13 +171,13 @@
     height: 219px;
 }
 
-.hai-row > ul {
+.tile-row > ul {
     margin: 0px;
     padding: 0px;
     list-style: none;
 }
 
-.hai-row > ul > li {
+.tile-row > ul > li {
     margin: 0px;
     padding: 0px;
     position: relative;
@@ -178,165 +185,165 @@
     left: 0px;
 }
 
-.hai-opposite {
-    background: var(--url-hai);
+.tile-opposite {
+    background: var(--url-tile);
 }
 
-.hai-up {
-    background: var(--url-hai);
+.tile-up {
+    background: var(--url-tile);
 }
 
-.hai-down {
-    background: var(--url-hai);
+.tile-down {
+    background: var(--url-tile);
 }
 
-.hai-self {
-    background: var(--url-hai);
+.tile-self {
+    background: var(--url-tile);
 }
 
-.hai-hand {
-    background: var(--url-hai);
+.tile-hand {
+    background: var(--url-tile);
 }
 
-.hai-vertical-middle {
+.tile-vertical-middle {
     float: left;
     width: 33px;
     height: 44px;
 }
 
-.hai-vertical-bottom {
+.tile-vertical-bottom {
     float: left;
     width: 33px;
     height: 59px;
 }
 
-.hai-vertical-bottom-parts {
+.tile-vertical-bottom-parts {
     margin: 0px;
     padding: 0px;
     position: relative;
     float: left;
     width: 33px;
     height: 15px;
-    background: url('/mahjong-ui/images/hai_bottom_parts_vertical.gif');
+    background: url('/mahjong-ui/images/tile_bottom_parts_vertical.gif');
 }
 
-.hai-vertical-place {
+.tile-vertical-place {
     float: left;
     width: 33px;
     height: 44px;
 }
 
-.hai-horizontal-middle {
+.tile-horizontal-middle {
     float: left;
     width: 44px;
     height: 34px;
 }
 
-.hai-horizontal-bottom {
+.tile-horizontal-bottom {
     float: left;
     width: 44px;
     height: 49px;
 }
 
-.hai-horizontal-bottom-parts {
+.tile-horizontal-bottom-parts {
     margin: 0px;
     padding: 0px;
     position: relative;
     float: left;
     width: 44px;
     height: 15px;
-    background: url('/mahjong-ui/images/hai_bottom_parts_horizontal.gif');
+    background: url('/mahjong-ui/images/tile_bottom_parts_horizontal.gif');
 }
 
-.hai-horizontal-place {
+.tile-horizontal-place {
     float: left;
     width: 44px;
     height: 34px;
 }
 
-.hai-in-hands {
+.tile-in-hands {
     float: left;
     width: 33px;
     height: 45px;
 }
 
-.hai-drawn {
+.tile-drawn {
     float: left;
     width: 33px;
     height: 45px;
 }
 
-.fu-vertical > div {
+.wind-vertical > div {
     width: 33px;
     height: 61px;
 }
 
-.fu-horizontal > div {
+.wind-horizontal > div {
     width: 60px;
     height: 37px;
 }
 
-.fu-east-opposite {
+.wind-east-opposite {
     background: url('/mahjong-ui/images/c_e_3.gif');
 }
 
-.fu-south-opposite {
+.wind-south-opposite {
     background: url('/mahjong-ui/images/c_s_3.gif');
 }
 
-.fu-west-opposite {
+.wind-west-opposite {
     background: url('/mahjong-ui/images/c_w_3.gif');
 }
 
-.fu-north-opposite {
+.wind-north-opposite {
     background: url('/mahjong-ui/images/c_n_3.gif');
 }
 
-.fu-east-up {
+.wind-east-up {
     background: url('/mahjong-ui/images/c_e_2.gif');
 }
 
-.fu-south-up {
+.wind-south-up {
     background: url('/mahjong-ui/images/c_s_2.gif');
 }
 
-.fu-west-up {
+.wind-west-up {
     background: url('/mahjong-ui/images/c_w_2.gif');
 }
 
-.fu-north-up {
+.wind-north-up {
     background: url('/mahjong-ui/images/c_n_2.gif');
 }
 
-.fu-east-down {
+.wind-east-down {
     background: url('/mahjong-ui/images/c_e_4.gif');
 }
 
-.fu-south-down {
+.wind-south-down {
     background: url('/mahjong-ui/images/c_s_4.gif');
 }
 
-.fu-west-down {
+.wind-west-down {
     background: url('/mahjong-ui/images/c_w_4.gif');
 }
 
-.fu-north-down {
+.wind-north-down {
     background: url('/mahjong-ui/images/c_n_4.gif');
 }
 
-.fu-east-self {
+.wind-east-self {
     background: url('/mahjong-ui/images/c_e_1.gif');
 }
 
-.fu-south-self {
+.wind-south-self {
     background: url('/mahjong-ui/images/c_s_1.gif');
 }
 
-.fu-west-self {
+.wind-west-self {
     background: url('/mahjong-ui/images/c_w_1.gif');
 }
 
-.fu-north-self {
+.wind-north-self {
     background: url('/mahjong-ui/images/c_n_1.gif');
 }
 
@@ -357,7 +364,7 @@
 
 .modal-wrapper {
     position: absolute;
-    top: 40%;
+    top: 47%;
     left: 50%;
     transform:translate(-50%,-50%);
     width: 35%;
@@ -380,7 +387,7 @@
     opacity : 1;
 }
 
-.ron-header {
+.round-result-header {
     padding-left: 10px;
     text-align: center;
 }
@@ -395,7 +402,7 @@
     text-align: right;
 }
 
-.result-header {
+.game-result-header {
     text-align: center;
 }
 
@@ -409,34 +416,29 @@
     text-align: right;
 }
 
-#debug-ron {
+#debug > button {
     position: absolute;
     width: 60px;
     height: 30px;
-    top: 594px;
     left: 776px;
 }
 
 #debug-start {
-    position: absolute;
-    width: 60px;
-    height: 30px;
+    top: 594px;
+}
+
+#debug-discard-tile {
     top: 554px;
-    left: 776px;
+}
+
+#debug-ron {
+    top: 514px;
 }
 
 #debug-next {
-    position: absolute;
-    width: 60px;
-    height: 30px;
-    top: 514px;
-    left: 776px;
+    top: 474px;
 }
 
 #debug-result {
-    position: absolute;
-    width: 60px;
-    height: 30px;
-    top: 474px;
-    left: 776px;
+    top: 434px;
 }

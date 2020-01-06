@@ -57,41 +57,71 @@ func (c *Client) readPump(m *MahjongPlayManager) {
 		switch {
 		case operator.isStart():
 			m.InitRound()
-			m.SendMessageStart()
-		case operator.isRelease():
-			releasedHai := m.ReleaseHai(operator.Target)
-			m.CheckPinfuAndSetRon(releasedHai)
-			playerIdInTurnBefore := m.RotatePlayer()
-			m.DistributeHai()
 
-			m.SendMessageRelease(playerIdInTurnBefore)
-			m.SendMessageReleaseOther(playerIdInTurnBefore, releasedHai)
-			if !m.PlayerInTurnCanRon() {
-				m.SendMessageDrawn(releasedHai)
-			}
-			for _, v := range m.sendMessages {
-				log.Println(v.Values)
+			m.SendMessageStart()
+		case operator.isDiscard():
+			discardedTile := m.DiscardTile(operator.Target)
+			canRon := m.CheckPinfuAndSetRon(discardedTile)
+			if canRon {
+				m.SendMessageDiscard(m.playerIdInTurn)
+				m.SendMessageDiscardOther(m.playerIdInTurn, discardedTile)
+			} else {
+				if m.CanDistributeTile() {
+					playerIdInTurnBefore := m.RotatePlayer()
+					m.DistributeTile()
+
+					m.SendMessageDiscard(playerIdInTurnBefore)
+					m.SendMessageDiscardOther(playerIdInTurnBefore, discardedTile)
+					m.SendMessageDrawn(discardedTile)
+				} else {
+					m.WaitNextMessage()
+
+					m.SendMessageDrawnRound()
+				}
 			}
 		case operator.isRon():
+			ronInfo := m.CalculateRonInfo(c.playerId)
+			m.UpdatePlayersPoint(ronInfo)
 			m.SetFirstPinfuOrder(c.playerId)
-			m.SendMessageRon()
+			m.DealerWin(c.playerId)
 			m.WaitNextMessage()
+
+			m.SendMessageRon(ronInfo)
+		case operator.isSkip():
+			m.RotatePlayer()
+			if m.CanDistributeTile() {
+				m.DistributeTile()
+
+				m.SendMessageSkip()
+				m.SendMessageDrawn(tileIdNone)
+			} else {
+				m.WaitNextMessage()
+
+				m.SendMessageDrawnRound()
+			}
 		case operator.isNext():
 			f := func() {
 				if m.continueGame() {
-					m.RotateRound()
-					m.RotatePlayerWind()
-					m.InitPlayerIdInTrun()
+					if m.IsDealerWin() {
+						m.NextSubRound()
+					} else {
+						m.RotateRound()
+						m.RotatePlayerWind()
+						m.ResetSubRound()
+					}
 					m.InitRound()
+
 					m.SendMessageNext()
 				} else {
 					result := m.CalculateResult()
+
 					m.SendMessageResult(result)
 				}
 			}
 			sendBroadCast = m.TriggerNextMessage(f)
 		case operator.isResult():
 			result := m.CalculateResult()
+
 			m.SendMessageResult(result)
 		default:
 			log.Println("not operated")
@@ -104,7 +134,7 @@ func (c *Client) readPump(m *MahjongPlayManager) {
 }
 
 func (c *Client) parseOperator(message []byte) *Operator {
-	operator := Operator{"", -1}
+	operator := Operator{"", tileIdNone}
 	err := json.Unmarshal(message, &operator)
 	if err == nil {
 		log.Println(operator)
@@ -161,12 +191,16 @@ func (o *Operator) isStart() bool {
 	return o.Operation == "start"
 }
 
-func (o *Operator) isRelease() bool {
-	return o.Operation == "release"
+func (o *Operator) isDiscard() bool {
+	return o.Operation == "discard"
 }
 
 func (o *Operator) isRon() bool {
 	return o.Operation == "ron"
+}
+
+func (o *Operator) isSkip() bool {
+	return o.Operation == "skip"
 }
 
 func (o *Operator) isNext() bool {
@@ -188,7 +222,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), playerId: hub.mahjongPlayManager.newPlayerNumber()}
 	client.hub.register <- client
 	if hub.mahjongPlayManager.isReady() {
-		hub.mahjongPlayManager.InitGame()
+		hub.mahjongPlayManager.InitRound()
 		hub.mahjongPlayManager.SendMessageStart()
 		hub.broadcast <- []byte{}
 	}

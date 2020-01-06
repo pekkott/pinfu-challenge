@@ -38,7 +38,7 @@ func (h *Hub) run() {
 				log.Printf("client playerId:%d", client.playerId)
 				select {
 				case client.send <- h.mahjongPlayManager.sendMessages[client.playerId].ToBytes():
-                                log.Printf("sendMessage:%s", h.mahjongPlayManager.sendMessages[client.playerId].ToBytes())
+				log.Printf("sendMessage:%s", h.mahjongPlayManager.sendMessages[client.playerId].ToBytes())
 				default:
 					close(client.send)
 					delete(h.clients, client)

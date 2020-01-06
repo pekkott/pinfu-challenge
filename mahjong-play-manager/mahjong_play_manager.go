@@ -12,11 +12,15 @@ import (
 )
 
 const (
-	haiInMountNumber = 136
-	haiInHandNumber = 13
+	tileInMountNumber = 136
+	tileInDistributionClusterNumber = 4
+	tileInHandNumber = 13
+	tileIdNone = -1
 	playerNumber = 4
+	playerIdNone = -1
 	roundNumber = 4
 	pointStart = 25000
+	costBySubRound = 300
 )
 
 var umaByOrder = [...]int{20, 10, -10, -20}
@@ -32,6 +36,7 @@ type MahjongPlayManager struct {
 	mountPosition int
 	waitingNext bool
 	waitingNextMux sync.Mutex
+	isDealerWin bool
 	sendMessages []*SendMessage
 }
 
@@ -49,36 +54,45 @@ type PlayerInfo struct {
 	FirstPinfuOrder int `json:"-"`
 	Wind Wind `json:"wind"`
 	Hands []int `json:"hands"`
-	DrawnHai int `json:"drawnHai"`
-	ReleasedHaiUp int `json:"releasedHaiUp"`
+	DrawnTile int `json:"drawnTile"`
+	DiscardedTileUp int `json:"discardedTileUp"`
+	PinfuInfo *PinfuInfo `json:"-"`
+}
+
+type DiscardedTileInfo struct {
+	PlayerPosition int `json:"playerPosition"`
+	DiscardedTile int `json:"discardedTile"`
 	CanRon bool `json:"canRon"`
 }
 
-type ReleasedHaiInfo struct {
-	PlayerPosition int `json:"playerPosition"`
-	ReleasedHai int `json:"releasedHai"`
+type CanRonInfo struct {
 	CanRon bool `json:"canRon"`
 }
 
 type RonInfo struct {
 	Point int `json:"point"`
-	PointsDiff int `json:"pointDiff"`
+	PointDiff int `json:"pointDiff"`
+}
+
+type DrawnGameInfo struct {
+RonInfo []*RonInfo `json:"ronInfo"`
+	DiscardedHai int `json:"discardedHai"`
 }
 
 type Round struct {
 	Wind Wind `json:"wind"`
-        Round int `json:"round"`
-        SubRound int `json:"subRound"`
+	Round int `json:"round"`
+	SubRound int `json:"subRound"`
 }
 
 type Result struct {
-        Point int `json:"point"`
-        Order int `json:"order"`
+	Point int `json:"point"`
+	Order int `json:"order"`
 }
 
 type SendMessage struct {
 	Type string `json:"type"`
-        Values interface{} `json:"values"`
+	Values interface{} `json:"values"`
 }
 
 const (
@@ -94,16 +108,14 @@ func WindList() []Wind {
 
 func (m *MahjongPlayManager) Init() {
 	m.round = &Round{EAST, 1, 0}
-	m.playerNumber = -1
+	m.playerNumber = playerIdNone
 	m.playerInfos = make([]*PlayerInfo, playerNumber)
 	for i := range m.playerInfos {
-		m.playerInfos[i] = &PlayerInfo{i, pointStart, playerNumber + 1, WindList()[i], make([]int, haiInHandNumber), -1, -1, false}
+		m.playerInfos[i] = &PlayerInfo{i, pointStart, playerNumber + 1, WindList()[i], make([]int, tileInHandNumber), tileIdNone, tileIdNone, &PinfuInfo{false, 0}}
 	}
-	m.playerInfos[0].Point = 26000
-	m.playerInfos[2].Point = 24000
-	m.InitPlayerIdInTrun()
 	m.InitSeed()
 	m.waitingNext = false
+	m.isDealerWin = false
 	m.sendMessages = make([]*SendMessage, playerNumber)
 }
 
@@ -122,20 +134,26 @@ func (m *MahjongPlayManager) InitSeed() {
 	rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
 }
 
-func (m *MahjongPlayManager) InitGame() {
-	m.round = &Round{EAST, 1, 0}
-	m.InitRound()
-}
-
 func (m *MahjongPlayManager) InitRound() {
-        m.mountPosition = 0
+	m.InitPlayerInfos()
+	m.InitPlayerIdInTrun()
 	m.InitMount()
 	m.InitHands()
-	m.DistributeHai()
+	m.DistributeTile()
+	m.isDealerWin = false
+}
+
+func (m *MahjongPlayManager) InitPlayerInfos() {
+	for _, p := range m.playerInfos {
+		p.DrawnTile = tileIdNone
+		p.DiscardedTileUp = tileIdNone
+		p.PinfuInfo = &PinfuInfo{false, 0}
+	}
 }
 
 func (m *MahjongPlayManager) InitMount() {
-	m.mount = make([]int, haiInMountNumber)
+	m.mountPosition = 0
+	m.mount = make([]int, tileInMountNumber)
 	for i := range m.mount {
 		m.mount[i] = i
 	}
@@ -146,11 +164,21 @@ func (m *MahjongPlayManager) InitMount() {
 }
 
 func (m *MahjongPlayManager) InitHands() {
-	for i := 0; i < haiInHandNumber; i++ {
+	clusterNumber := (tileInHandNumber - 1)/tileInDistributionClusterNumber
+	for i := 0; i < clusterNumber; i++ {
 		for j := 0; j < playerNumber; j++ {
-			m.playerInfos[j].Hands[i] = m.mount[m.mountPosition]
-			m.mountPosition++
+			targetId := (m.playerIdInTurn + j) % playerNumber
+			for k := 0; k < tileInDistributionClusterNumber; k++ {
+				m.playerInfos[targetId].Hands[i*tileInDistributionClusterNumber + k] = m.mount[m.mountPosition]
+				m.mountPosition++
+			}
 		}
+	}
+
+	for i := 0; i < playerNumber; i++ {
+		targetId := (m.playerIdInTurn + i) % playerNumber
+		m.playerInfos[targetId].Hands[tileInHandNumber - 1] = m.mount[m.mountPosition]
+		m.mountPosition++
 	}
 
 	for i := 0; i < playerNumber; i++ {
@@ -185,56 +213,75 @@ func (m *MahjongPlayManager) GenerateEachWinds(playerId int) []Wind {
 	return winds
 }
 
-func (m *MahjongPlayManager) GeneratePoints() []int {
+func (m *MahjongPlayManager) GenerateEachPoints(playerId int) []int {
 	points := make([]int, playerNumber)
-	for _, p := range m.playerInfos {
-		points[p.PlayerId] = p.Point
+	for i, p := range m.playerInfos {
+		points[(playerNumber - playerId + i) % playerNumber] = p.Point
 	}
 	return points
 }
 
-func (m *MahjongPlayManager) DistributeHai() {
-	log.Printf("mount position:%d", m.mountPosition);
-	if m.mountPosition < haiInMountNumber {
-		m.playerInfos[m.playerIdInTurn].DrawnHai = m.mount[m.mountPosition]
-		m.mountPosition++
-	}
+func (m *MahjongPlayManager) DistributeTile() {
+	m.playerInfos[m.playerIdInTurn].DrawnTile = m.mount[m.mountPosition]
+	m.mountPosition++
 }
 
-func (m *MahjongPlayManager) ReleaseHai(position int) int {
+func (m *MahjongPlayManager) CanDistributeTile() bool {
+	return m.mountPosition < tileInMountNumber
+}
+
+func (m *MahjongPlayManager) DiscardTile(position int) int {
 	playerInTurn := m.playerInfos[m.playerIdInTurn]
-	releasedHai := playerInTurn.DrawnHai
+	discardedTile := playerInTurn.DrawnTile
 	if position >= 0 && position < len(playerInTurn.Hands) {
-		log.Printf("release position:%d", position)
-		releasedHai = playerInTurn.Hands[position]
-		playerInTurn.Hands[position] = playerInTurn.DrawnHai
+		log.Printf("discard position:%d", position)
+		discardedTile = playerInTurn.Hands[position]
+		playerInTurn.Hands[position] = playerInTurn.DrawnTile
 		sort.Ints(playerInTurn.Hands)
 	}
-	log.Printf("release drawnHai:%d", playerInTurn.DrawnHai)
-	log.Printf("releasedHai:%d", releasedHai)
+	log.Printf("discard drawnTile:%d", playerInTurn.DrawnTile)
+	log.Printf("discardedTile:%d", discardedTile)
 	log.Println(playerInTurn.Hands)
-	playerInTurn.DrawnHai = -1
-	return releasedHai
+	playerInTurn.DrawnTile = tileIdNone
+	return discardedTile
 }
 
-func (m *MahjongPlayManager) CheckPinfuAndSetRon(releasedHai int) {
+func (m *MahjongPlayManager) CheckPinfuAndSetRon(discardedTile int) bool {
+	canRon := false
 	for i, p := range m.playerInfos {
 		if i != m.playerIdInTurn {
-			p.CanRon = m.PinfuQuery(p.Hands, releasedHai, 27, 27)
+			p.PinfuInfo = m.PinfuQuery(p.Hands, discardedTile, int(m.round.Wind), int(p.Wind))
+			if p.PinfuInfo.IsPinfu {
+				canRon = true
+			}
 			log.Printf("canRon:%d", m.playerIdInTurn)
 		}
 	}
+	return canRon
 }
 
-func (m *MahjongPlayManager) PinfuQuery(hands []int, releasedHai, wind int, selfWind int) bool {
+func (m *MahjongPlayManager) PinfuQuery(hands []int, discardedTile, wind int, selfWind int) *PinfuInfo {
 	p := PinfuQuery{}
-        p.Parse(hands, releasedHai, wind, selfWind)
-        log.Println(p)
+	p.Parse(hands, discardedTile, selfWind, wind)
+	log.Println(p)
 	return p.Query()
 }
 
-func (m *MahjongPlayManager) PlayerInTurnCanRon() bool {
-	return m.playerInfos[m.playerIdInTurn].CanRon
+func (m *MahjongPlayManager) CalculateRonInfo(playerId int) []*RonInfo {
+	r := make([]*RonInfo, playerNumber)
+	for i, p := range m.playerInfos {
+		r[i] = &RonInfo{p.Point, 0}
+	}
+	cost := m.playerInfos[playerId].PinfuInfo.Cost + costBySubRound*m.round.SubRound
+	r[playerId].Update(cost)
+	r[m.playerIdInTurn].Update(-cost)
+	return r
+}
+
+func (m *MahjongPlayManager) UpdatePlayersPoint(r []*RonInfo) {
+	for _, p := range m.playerInfos {
+		p.Point = r[p.PlayerId].Point
+	}
 }
 
 func (m *MahjongPlayManager) SetFirstPinfuOrder(playerId int) {
@@ -246,7 +293,7 @@ func (m *MahjongPlayManager) SetFirstPinfuOrder(playerId int) {
 	}
 
 	if !m.playerInfos[playerId].WinnedPinfu() {
-		m.playerInfos[playerId].FirstPinfuOrder = maxOrder + 1;
+		m.playerInfos[playerId].FirstPinfuOrder = maxOrder + 1
 	}
 }
 
@@ -257,7 +304,7 @@ func (m *MahjongPlayManager) CalculateResult() []*Result {
 	}, playerNumber)
 
 	r := make([]*Result, playerNumber)
-	if !m.isEvenGame() {
+	if !m.isDrawnGame() {
 		for i, p := range m.playerInfos {
 			points[i].playerId = i
 			points[i].point = p.Point + (10 - p.FirstPinfuOrder) * 10 - p.PlayerId
@@ -292,43 +339,64 @@ func (m *MahjongPlayManager) SendMessagePlay(messageType string) {
 	for i := range m.sendMessages {
 		playerIds := m.GenerateEachPlayerIds(i)
 		winds := m.GenerateEachWinds(i)
-		points := m.GeneratePoints()
+		points := m.GenerateEachPoints(i)
 		m.sendMessages[i] = &SendMessage{messageType, &PlayInfo{m.round, m.playerInfos[i], playerIds, winds, points}}
 	}
 }
 
-func (m *MahjongPlayManager) SendMessageRelease(playerIdInTurnBefore int) {
-	log.Printf("send message release playerId:%d", playerIdInTurnBefore)
+func (m *MahjongPlayManager) SendMessageDiscard(playerIdInTurnBefore int) {
+	log.Printf("send message discard playerId:%d", playerIdInTurnBefore)
 	for _, v := range m.playerInfos {
 		log.Println(v)
 	}
-	m.sendMessages[playerIdInTurnBefore] = &SendMessage{"release", &m.playerInfos[playerIdInTurnBefore]}
+	m.sendMessages[playerIdInTurnBefore] = &SendMessage{"discard", &m.playerInfos[playerIdInTurnBefore]}
 }
 
-func (m *MahjongPlayManager) SendMessageDrawn(releasedHai int) {
-	m.playerInfos[m.playerIdInTurn].ReleasedHaiUp = releasedHai
+func (m *MahjongPlayManager) SendMessageDrawn(discardedTile int) {
+	m.playerInfos[m.playerIdInTurn].DiscardedTileUp = discardedTile
 	m.sendMessages[m.playerIdInTurn] = &SendMessage{"drawn", &m.playerInfos[m.playerIdInTurn]}
 }
 
-func (m *MahjongPlayManager) SendMessageReleaseOther(playerIdInTurnBefore int, releasedHai int) {
-	log.Printf("releasedHai:%d", releasedHai)
+func (m *MahjongPlayManager) SendMessageDiscardOther(playerIdInTurnBefore int, discardedTile int) {
+	log.Printf("discardedTile:%d", discardedTile)
 	playerIds := m.GenerateEachPlayerIds(playerIdInTurnBefore)
 	for i := range m.sendMessages {
 		if i != playerIdInTurnBefore {
-			r := &ReleasedHaiInfo{playerIds[i], releasedHai, m.playerInfos[i].CanRon}
-			m.sendMessages[i] = &SendMessage{"releaseOther", r}
+			r := &DiscardedTileInfo{playerIds[i], discardedTile, m.playerInfos[i].PinfuInfo.IsPinfu}
+			m.sendMessages[i] = &SendMessage{"discardOther", r}
 		}
 	}
 }
 
-func (m *MahjongPlayManager) SendMessageRon() {
-	r := make([]*RonInfo, playerNumber)
-	r[0] = &RonInfo{26000, 1000}
-	r[1] = &RonInfo{25000, 0}
-	r[2] = &RonInfo{24000, -1000}
-	r[3] = &RonInfo{25000, 0}
+func (m *MahjongPlayManager) SendMessageCanRon() {
+	for i, p := range m.playerInfos {
+		if i != m.playerIdInTurn {
+			m.sendMessages[i] = &SendMessage{"canRon", CanRonInfo{p.PinfuInfo.IsPinfu}}
+		}
+	}
+}
+
+func (m *MahjongPlayManager) SendMessageRon(r []*RonInfo) {
 	for i := range m.sendMessages {
 		m.sendMessages[i] = &SendMessage{"ron", r}
+	}
+}
+
+func (m *MahjongPlayManager) SendMessageSkip() {
+	for i := range m.sendMessages {
+		if i != m.playerIdInTurn {
+			m.sendMessages[i] = &SendMessage{"skip", ""}
+		}
+	}
+}
+
+func (m *MahjongPlayManager) SendMessageDrawnRound() {
+	r := make([]*RonInfo, playerNumber)
+	for i, p := range m.playerInfos {
+		r[i] = &RonInfo{p.Point, 0}
+	}
+	for i := range m.sendMessages {
+		m.sendMessages[i] = &SendMessage{"drawnRound", r}
 	}
 }
 
@@ -358,10 +426,18 @@ func (m *MahjongPlayManager) TriggerNextMessage(f func()) bool {
 	return false
 }
 
+func (m *MahjongPlayManager) IsDealerWin() bool {
+	return m.isDealerWin
+}
+
+func (m *MahjongPlayManager) DealerWin(playerId int) {
+	m.isDealerWin = m.playerInfos[playerId].Wind == EAST
+}
+
 func (m *MahjongPlayManager) RotatePlayer() int {
 	playerIdInTurnBefore := m.playerIdInTurn
 	m.playerIdInTurn = (m.playerIdInTurn + 1) % playerNumber
-	log.Printf("playerId in turn:%d", m.playerIdInTurn);
+	log.Printf("playerId in turn:%d", m.playerIdInTurn)
 	return playerIdInTurnBefore
 }
 
@@ -371,20 +447,28 @@ func (m *MahjongPlayManager) RotatePlayerWind() {
 	}
 }
 
+func (m *MahjongPlayManager) NextSubRound() {
+	m.round.NextSubRound()
+}
+
+func (m *MahjongPlayManager) ResetSubRound() {
+	m.round.ResetSubRound()
+}
+
 func (m *MahjongPlayManager) RotateRound() {
-	if !m.round.isFinalRound() {
+	if !m.round.IsFinalRound() {
 		m.round.Round++
-	} else if !m.round.isFinalWind() {
+	} else if !m.round.IsFinalWind() {
 		m.round.Wind = m.round.Wind.Next()
 		m.round.Round = 1
 	}
 }
 
 func (m *MahjongPlayManager) continueGame() bool {
-	return !m.round.isFinalRound() || (m.isEvenGame() && !m.round.isFinalWind())
+	return !m.round.IsFinalRound() || (m.isDrawnGame() && !m.round.IsFinalWind())
 }
 
-func (m *MahjongPlayManager) isEvenGame() bool {
+func (m *MahjongPlayManager) isDrawnGame() bool {
 	return m.playerInfos[0].Point == m.playerInfos[1].Point && m.playerInfos[0].Point == m.playerInfos[2].Point && m.playerInfos[0].Point == m.playerInfos[3].Point
 }
 
@@ -405,12 +489,25 @@ func (w Wind) NextPlayerWind() Wind {
 	return WindList()[(int(w) + playerNumber - 2) % playerNumber]
 }
 
-func (r *Round) isFinalRound() bool {
+func (r *Round) NextSubRound() {
+	r.SubRound++
+}
+
+func (r *Round) ResetSubRound() {
+	r.SubRound = 0
+}
+
+func (r *Round) IsFinalRound() bool {
 	return r.Round == roundNumber
 }
 
-func (r *Round) isFinalWind() bool {
+func (r *Round) IsFinalWind() bool {
 	return r.Wind == SOUTH
+}
+
+func (r *RonInfo) Update(cost int) {
+	r.Point = r.Point + cost
+	r.PointDiff = cost
 }
 
 func (s *SendMessage) ToBytes() []byte {

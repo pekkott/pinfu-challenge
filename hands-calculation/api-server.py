@@ -25,7 +25,7 @@ def app(environ, start_response):
   status = '200 OK'
   start_response(status, headers)
  
-  return [json.dumps({'isPinfu':is_pinfu}).encode("utf-8")]
+  return is_pinfu
  
 with make_server('', 8000, app) as httpd:
   print("Serving on port 8000...")
