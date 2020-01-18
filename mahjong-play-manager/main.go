@@ -31,7 +31,7 @@ func main() {
 	hub := newHub(&m)
 	go hub.run()
 	http.HandleFunc("/", serveHome)
-        http.Handle("/mahjong-ui/", http.StripPrefix("/mahjong-ui/", http.FileServer(http.Dir("../mahjong-ui"))))
+	http.Handle("/mahjong-ui/", http.StripPrefix("/mahjong-ui/", http.FileServer(http.Dir("../mahjong-ui"))))
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})

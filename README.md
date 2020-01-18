@@ -1,21 +1,35 @@
 # 使い方
 
+## Dockerイメージビルド
+
+```
+cd /path/to/pinfu-challenge/docker-images
 docker image build mahjong --tag mahjong
 docker image build mahjong-play-manager --tag mahjong-play-manager
+```
 
-docker run -p 8000:8000 -v /path/to/pinfu-challenge/hands-calculation:/var/www mahjong /bin/sh -c "python /var/www/api-server.py"
+## コンテナ起動
 
-docker run -p 8000:8000 -v /path/to/pinfu-challenge/hands-calculation:/var/www mahjong /bin/sh -c "python /var/www/api-server.py"
-
+```
+docker run --rm --name mahjong -v /path/to/pinfu-challenge/hands-calculation:/var/www -p 8000:8000 mahjong /bin/sh -c "python /var/www/api-server.py"
 docker run --rm --name mahjong-play-manager -v /path/to/pinfu-challenge/var/www/ -p 8080:8080 mahjong-play-manager /bin/sh -c "cd /var/www/mahjong-play-manager; go run *.go"
+```
 
-docker stop mahjong-play-manager
+## mahjong API実行
 
+```
 curl -H 'Content-Type:application/json' -d '{"man":"22223333444488","pin":"","sou":"","honors":"","player_wind":27,"round_wind":27,"win_tile_type":"man","win_tile_value":"4"}' http\://localhost:8000
+```
+
+## コンテナ停止
+```
+docker stop mahjong
+docker stop mahjong-play-manager
+```
 
 # 画像
 
-こちらのサイトで配布されている画材(2が付いていない画材)をimages以下に配置すると正常に表示されます。
+こちらのサイトで配布されている画材(2が付いていない画材)をmahjong-ui/images以下に配置すると正常に表示されます。
 ```
 https://mj-king.net/sozai/
 ```
