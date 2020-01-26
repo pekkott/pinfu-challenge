@@ -74,9 +74,9 @@ type RonInfo struct {
 	PointDiff int `json:"pointDiff"`
 }
 
-type DrawnGameInfo struct {
-RonInfo []*RonInfo `json:"ronInfo"`
-	DiscardedHai int `json:"discardedHai"`
+type DrawnRoundInfo struct {
+	RonInfo []*RonInfo `json:"ronInfo"`
+	DiscardedTileInfo *DiscardedTileInfo `json:"discardedTileInfo"`
 }
 
 type Round struct {
@@ -390,13 +390,14 @@ func (m *MahjongPlayManager) SendMessageSkip() {
 	}
 }
 
-func (m *MahjongPlayManager) SendMessageDrawnRound() {
+func (m *MahjongPlayManager) SendMessageDrawnRound(discardedTile int) {
 	r := make([]*RonInfo, playerNumber)
 	for i, p := range m.playerInfos {
 		r[i] = &RonInfo{p.Point, 0}
 	}
 	for i := range m.sendMessages {
-		m.sendMessages[i] = &SendMessage{"drawnRound", r}
+		m.sendMessages[i] = &SendMessage{"drawnRound", &DrawnRoundInfo{r, &DiscardedTileInfo{(playerNumber - m.playerIdInTurn + i) % playerNumber, discardedTile, false}}}
+	log.Printf("DiscardedTileInfo:%d", (playerNumber - m.playerIdInTurn + i) % playerNumber)
 	}
 }
 

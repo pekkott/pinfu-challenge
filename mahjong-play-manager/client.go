@@ -76,7 +76,7 @@ func (c *Client) readPump(m *MahjongPlayManager) {
 				} else {
 					m.WaitNextMessage()
 
-					m.SendMessageDrawnRound()
+					m.SendMessageDrawnRound(discardedTile)
 				}
 			}
 		case operator.isRon():
@@ -97,7 +97,7 @@ func (c *Client) readPump(m *MahjongPlayManager) {
 			} else {
 				m.WaitNextMessage()
 
-				m.SendMessageDrawnRound()
+				m.SendMessageDrawnRound(tileIdNone)
 			}
 		case operator.isNext():
 			f := func() {

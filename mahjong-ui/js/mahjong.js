@@ -91,7 +91,6 @@ class MahjongManager {
 
         $('#hands-tile-self').on('click', (event) => this.discard(event));
         $('#tile-drawn-self').on('click', (event) => this.discardDrawnTile(event));
-        $('#wind-self').on('click', (event) => this.discardDrawnTile(event));
         $('#close-modal-round-result').on('click', (event) => this.closeRoundResultModal());
         $('#close-modal-game-result').on('click', (event) => this.closeGameResultModal());
     }
@@ -296,6 +295,8 @@ class Player {
         var imageName = Mahjong.TILE_TYPES[this.toTileType(tileId)];
         if (imageName) {
             item.style.setProperty('--url-tile', "url('/mahjong-ui/images/p_" + imageName + '_' + (this.position + 1) + ".gif')");
+        } else {
+            item.style.setProperty('--url-tile', "");
         }
     }
 
@@ -480,6 +481,7 @@ class PlayerSelf extends Player {
             var i = this.toOrderedIndex();
             this.tilesDiscarded.set(i, this.drawnTile);
             this.drawnTile = -1;
+            this.showDrawnTile();
         }
     }
 
@@ -556,6 +558,7 @@ class Modal {
 
 class RoundResultModal extends Modal {
     updatePlayerPoints(ronInfo) {
+        console.log(ronInfo);
         $('.player-point').each(function(item, i) {
             item.innerHTML = ronInfo[i].point;
         });
@@ -649,7 +652,6 @@ class WebSocketManager {
         console.log(playerInfo);
         mahjongManager.updatePlayerHands(playerInfo);
         mahjongManager.showHands();
-        mahjongManager.hideDrawnTile();
     }
 
     receiveDrawn(mahjongManager, playerInfo) {
@@ -686,6 +688,11 @@ class WebSocketManager {
 
     receiveDrawnRound(mahjongManager, drawnRoundInfo) {
         console.log(drawnRoundInfo);
+        var playerPosition = drawnRoundInfo.discardedTileInfo.playerPosition;
+        if (playerPosition != 0) {
+            mahjongManager.players[playerPosition].discardOther(drawnRoundInfo.discardedTileInfo.discardedTile);
+            mahjongManager.players[playerPosition].showHo();
+        }
         mahjongManager.updatePlayerPoints(drawnRoundInfo.ronInfo);
         mahjongManager.showRoundDrawnGameModal();
     }
